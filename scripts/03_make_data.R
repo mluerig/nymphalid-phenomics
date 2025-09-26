@@ -23,8 +23,11 @@ pkgs <- c(
   # Statistical modeling and multivariate analysis
   "mgcv", "gratia", "FactoMineR", "factoextra",
   "AICcmodavg", "caret", "sda", "fields",
-  "umap", "Rtsne", "mclust", "MLmetrics"
+  "umap", "Rtsne", "mclust", "MLmetrics",
 
+  # Phylogenetics and tree visualization
+  "phytools"
+  
 )
 
 pacman::p_load(char = pkgs, install = F)
@@ -509,9 +512,6 @@ fwrite(data_mean_sim_agg_dv_sex, "data/data_secondary/mean_sim_agg_dv_sex.csv")
 
 
 # ROIs --------------------------------------------------------------------
-
-
-# make folders --------------------------------------------------------
 
 pca_coords_butterflies[, roi_path := paste0( "data_raw//segmentation_masks_clean//all_masks", "//" , species, "//", mask_name)]
 
