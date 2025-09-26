@@ -2,7 +2,7 @@
 
 </div><br>
 <div align="center">
-    <p><img src="assets/composite_dorsal1.png" width="500"></p>
+    <p><img src="assets/composite_dorsal1.png"></p>
 </div>
 
 ### About
@@ -55,7 +55,7 @@ This repository contains the full pipeline and code for the analysis in the pape
 
 </div><br>
 <div align="center">
-    <p><img src="figures/figureS1.png" width="500"></p>
+    <p><img src="assets/figureS1.png" width="500"></p>
 </div>
 
 Run the following scripts in order to reproduce the results:
