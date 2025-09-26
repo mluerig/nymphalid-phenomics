@@ -1,5 +1,10 @@
 ## nymphalid-phenomics
 
+</div><br>
+<div align="center">
+    <p><img src="assets/composite_dorsal1.png" width="500"></p>
+</div>
+
 ### About
 This repository contains the full pipeline and code for the analysis in the paper on global color pattern variation and chemical defense in Nymphalidae butterflies. The project combines large-scale image acquisition, segmentation, feature extraction, and statistical analysis to quantify aposematic signals and similarity metrics across thousands of species. All code, data, and instructions are provided for full reproducibility.
 
@@ -36,6 +41,7 @@ This repository contains the full pipeline and code for the analysis in the pape
 	  ```
 
 ### Data
+
 - **Download:**
   - All raw images, segmentation masks, and metadata tables are available from Zenodo:
 	 - [Zenodo DOI link here — add actual link]
@@ -47,7 +53,10 @@ This repository contains the full pipeline and code for the analysis in the pape
 
 ### Analysis
 
-![pipeline overview](figures/figureS1.png)
+</div><br>
+<div align="center">
+    <p><img src="figures/figureS1.png" width="500"></p>
+</div>
 
 Run the following scripts in order to reproduce the results:
 1. **Segmentation:**
