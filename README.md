@@ -47,11 +47,7 @@ This repository contains the full pipeline and code for the analysis in the pape
 
 ### Analysis
 
-#### Figure S1: Example segmentation and feature extraction
-
-![Figure S1: Example segmentation and feature extraction workflow](figures/figureS1.png)
-
-*Figure S1. Example workflow showing segmentation of butterfly specimens using GroundedSAM and subsequent feature extraction with UNICOM. The left panel displays raw input images, the middle panel shows segmentation masks, and the right panel illustrates extracted feature embeddings visualized as color patterns.*
+![pipeline overview](figures/figureS1.png)
 
 Run the following scripts in order to reproduce the results:
 1. **Segmentation:**
