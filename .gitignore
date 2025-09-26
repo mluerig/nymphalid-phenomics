@@ -1,9 +1,14 @@
-## data folder
-data
-data_raw
-figures
-tables
-models
+## folders
+data/*
+data_raw/*
+figures/*
+tables/*
+
+# keep empty folders
+!data/.gitkeep
+!data_raw/.gitkeep
+!figures/.gitkeep
+!tables/.gitkeep
 
 # Common editor / OS artifacts (optional, add more as needed)
 .DS_Store
