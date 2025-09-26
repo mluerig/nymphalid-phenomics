@@ -1,0 +1,24 @@
+## create with `mamba env create -f environment.yml -n nymphalidae1`
+## install with activate > `mamba env update -f environment.yml`
+
+dependencies:
+  - python=3.11
+  - nvidia::cuda-toolkit==12.6 ## optional - comment out if no gpu is available
+  - pip
+  - pip:
+    - matplotlib
+    - numpy
+    - pandas
+    - phenopype
+    - phenopype-plugins
+    - scikit-learn
+    - timm
+    - tqdm
+
+    # optional - just for demonstration of the segmentation part
+    - autodistill-grounded-sam
+    - roboflow
+    
+## install manually after environment creation 
+# pip install --no-cache-dir "unicom @ git+https://github.com/deepglint/unicom.git@4d84a3b496a47bcad68467d71c5ca787b0366042"               
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126 --force-reinstall  

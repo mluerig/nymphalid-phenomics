@@ -1,0 +1,13 @@
+## data folder
+data
+data_raw
+figures
+tables
+models
+
+# Common editor / OS artifacts (optional, add more as needed)
+.DS_Store
+Thumbs.db
+__pycache__/
+*.py[cod]
+*.swp
