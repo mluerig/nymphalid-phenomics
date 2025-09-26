@@ -6,8 +6,8 @@ tables/*
 
 # keep empty folders
 !data/.gitkeep
-!data/README.md
 !data_raw/.gitkeep
+!data_raw/README.md
 !figures/.gitkeep
 !tables/.gitkeep
 
