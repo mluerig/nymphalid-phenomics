@@ -1,11 +1,7 @@
 # 00 - header ---------------------------------------------------------------
 
-## remove all vars
-rm(list = ls())
-
-## set wd
+## set workdir to repo
 setwd("D:\\git-repos\\mluerig\\nymphalid-phenomics")
-source("scripts\\utils\\utils_r.R")
 
 ## "pacman" does automatic package loading
 if (!require("pacman")) install.packages("pacman")
@@ -25,10 +21,16 @@ pkgs <- c(
   "AICcmodavg", "caret", "sda", "fields",
   "umap", "Rtsne", "mclust", "MLmetrics",
 
-  # Phylogenetics and tree visualization
-  "phytools"
+  # load tree
+  "phytools",
+  
+  ## for utils
+  "terra","MASS"
   
 )
+
+## load custom tools
+source("scripts\\utils\\utils_r.R")
 
 pacman::p_load(char = pkgs, install = F)
 rm(pkgs)
@@ -42,6 +44,7 @@ theme_update(
 
 ## load files
 data_emb = fread("data/data_primary/embeddings.csv", stringsAsFactors = T)
+data_emb_moths = fread("data/data_primary/embeddings_moths.csv")
 data_feat = fread("data/data_primary/features.csv", stringsAsFactors = T)
 data_meta = fread("data/data_primary/meta.csv", stringsAsFactors = T)
 data_labels = fread("data/data_primary/labels.csv", stringsAsFactors = T)
@@ -94,18 +97,7 @@ fam_cols = c(`0` = "black", heliconiinae = "#FF00B6", satyrinae = "#005300",
 fam_labs = c("Root", tools::toTitleCase(names(fam_cols)[2:12])) 
 names(fam_labs) = names(fam_cols)
 
-# 03 - moths -------------------------------------------------------------------
-
-## load moth dataset
-data_moths = fread("data/data_primary/embeddings_moths.csv")
-data_moths[, unpalatability := factor(ifelse(strategy=="aposematic", "high", "low"), levels=c("low","high"))]
-data_meta_moths = data_moths[, -cols_emb, with=F]
-data_meta_moths = data_meta_moths[, c("species",  "strategy",  "mask_name", "unpalatability")]
-
-data_meta_moths_agg = unique(data_meta_moths[, .(species, strategy, unpalatability)])
-fwrite(data_meta_moths_agg, "data/data_primary/meta_moths.csv")
-
-# 04 - PCA -----------------------------------------------------------------
+# 03 - PCA -----------------------------------------------------------------
 
 ## prep
 data_pca = merge(data_meta[,c("mask_name", "uuid","species", "unpalatability", "class_dv", "species_label", "sex")], data_emb, by="mask_name")
@@ -129,11 +121,14 @@ pca_coords_butterflies = cbind(
   pca_coords_butterflies)
 
 ## dim reduction moths
-pca_coords_moths = predict(pca1, data_moths[, cols_emb, with=FALSE])
+data_emb_moths[, unpalatability := factor(ifelse(strategy=="aposematic", "high", "low"), levels=c("low","high"))]
+data_meta_moths = data_emb_moths[, -cols_emb, with=F]
+data_meta_moths = data_meta_moths[, c("species",  "strategy",  "mask_name", "unpalatability")]
+pca_coords_moths = predict(pca1, data_emb_moths[, cols_emb, with=FALSE])
 pca_coords_moths = data.table(pca_coords_moths$coord[,1:pc_cutoff])
 setnames(pca_coords_moths, cols_pc_dims)
 pca_coords_moths = cbind(
-  data_moths[, -cols_emb, with=FALSE], 
+  data_emb_moths[, -cols_emb, with=FALSE], 
   pca_coords_moths)
 
 ## aggregation
@@ -148,7 +143,7 @@ pca_coords_moths_agg = pca_coords_moths[
 
 
 
-# 05 - outlier removal ----------------------------------------------------
+# 04 - outlier removal ----------------------------------------------------
 
 result_list <- list()
 unpala_classes <- c("low", "high")
@@ -188,7 +183,7 @@ result_gmm_outlier = result_gmm_outlier[order(mahal_dist)]
 species_incl <- result_gmm_outlier[mahal_dist < mahal_cutoff]$species 
 species_excl <- result_gmm_outlier[mahal_dist > mahal_cutoff]$species
 
-# 06 - LDA --------------------------------------------------------
+# 05 - LDA --------------------------------------------------------
 
 ## subset 
 pca_coords_butterflies_agg_incl <- pca_coords_butterflies_agg[species %in% species_incl]
@@ -286,7 +281,7 @@ for (pc in pc_range) {
 
 fwrite(results_metrics, "data/data_secondary/lda_results.csv")
 
-# 07 - LDA predict ---------------------------------------------------------
+# 06 - LDA predict ---------------------------------------------------------
 
 ## use model with 7 components
 final_components = 7
@@ -313,41 +308,6 @@ data_ld_scores_moths = data.table(
 #   unpalatability_pred = pred_ld_moths_agg$class
 # )
 # data_ld_scores_moths_agg[, fail := unpalatability != as.character(unpalatability_pred)]
-
-# table S2 ----------------------------------------------------------------
-
-for (dataset_name in names(datasets)) {
-  cat(dataset_name)
-  print(nrow(datasets[[dataset_name]]))
-}
-
-data_lda_results = results_metrics[pcs==final_components]
-data_lda_results[dataset=="train", N:=215]
-data_lda_results[dataset=="test1_id", N:=52]
-data_lda_results[dataset=="test2_ood", N:=81]
-data_lda_results[dataset=="test3_moths", N:=58]
-
-for (dataset_name in names(datasets)) {
-  dataset <- datasets[[dataset_name]]
-  
-  # Loop over unique values in `class_dv`
-  for (dv_class in unique(dataset$class_dv)) {
-    
-    # Subset dataset for current class_dv
-    subset_data <- dataset[class_dv == dv_class]
-    
-    # Get LDA predictions
-    lda_pred <- predict(lda_mod, as.matrix(subset_data[, cols_pc_dims[1:final_components], with=FALSE]))
-    
-    # Compute Precision, Recall, and F1-score (macro-averaged)
-    y_pred <- lda_pred$class
-    y_true <- subset_data$unpalatability
-    conf_matrix <- table(Predicted = y_pred, Actual = y_true)
-    print(paste(dataset_name, "-",dv_class))
-    print(conf_matrix)
-    
-  }
-}
 
 # 08 - PCA + supp ---------------------------------------------------------
 
@@ -493,8 +453,45 @@ data_mean_sim_agg_dv_sex <- pca_coords_butterflies_sub[, {
   .(mean_sim_apo = mean_cosine_sim(mat_7), mean_sim_all = mean_cosine_sim(mat_177))
 }, by = c("species", "class_dv", "sex")]
 
+# table S2 ----------------------------------------------------------------
+
+for (dataset_name in names(datasets)) {
+  cat(dataset_name)
+  print(nrow(datasets[[dataset_name]]))
+}
+
+data_lda_results = results_metrics[pcs==final_components]
+data_lda_results[dataset=="train", N:=215]
+data_lda_results[dataset=="test1_id", N:=52]
+data_lda_results[dataset=="test2_ood", N:=81]
+data_lda_results[dataset=="test3_moths", N:=58]
+
+for (dataset_name in names(datasets)) {
+  dataset <- datasets[[dataset_name]]
+  
+  # Loop over unique values in `class_dv`
+  for (dv_class in unique(dataset$class_dv)) {
+    
+    # Subset dataset for current class_dv
+    subset_data <- dataset[class_dv == dv_class]
+    
+    # Get LDA predictions
+    lda_pred <- predict(lda_mod, as.matrix(subset_data[, cols_pc_dims[1:final_components], with=FALSE]))
+    
+    # Compute Precision, Recall, and F1-score (macro-averaged)
+    y_pred <- lda_pred$class
+    y_true <- subset_data$unpalatability
+    conf_matrix <- table(Predicted = y_pred, Actual = y_true)
+    print(paste(dataset_name, "-",dv_class))
+    print(conf_matrix)
+    
+  }
+}
+
 
 # EXPORT ------------------------------------------------------------------
+
+dir.create("data/data_secondary", recursive = TRUE, showWarnings = FALSE)
 
 fwrite(pca_coords_butterflies, "data/data_secondary/pca2_coords_butterflies.csv")
 fwrite(pca_eigenvalues, "data/data_secondary/pca2_eigenvalues.csv")
@@ -513,6 +510,7 @@ fwrite(data_mean_sim_agg_dv_sex, "data/data_secondary/mean_sim_agg_dv_sex.csv")
 
 # ROIs --------------------------------------------------------------------
 
+## need to download images and place in "data_raw//segmentation_masks_clean//all_masks" first
 pca_coords_butterflies[, roi_path := paste0( "data_raw//segmentation_masks_clean//all_masks", "//" , species, "//", mask_name)]
 
 ## class dv

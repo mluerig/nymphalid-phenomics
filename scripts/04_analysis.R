@@ -1,11 +1,7 @@
 # 00 - header ---------------------------------------------------------------
 
-## remove all vars
-rm(list = ls())
-
-## set wd
+## set workdir to repo
 setwd("D:\\git-repos\\mluerig\\nymphalid-phenomics")
-source("scripts\\utils\\utils_r.R")
 
 ## non-cran packages
 remotes::install_github("eric-pedersen/MRFtools")
@@ -29,8 +25,14 @@ pkgs <- c(
   "sjPlot", "lmerTest","mclust","stringdist",
   
   # Phylogenetics and tree visualization
-  "phytools", "ggtree", "mvMORPH"
+  "phytools", "ggtree", "mvMORPH",
+  
+  ## for utils
+  "terra","MASS"
 )
+
+## load custom tools
+source("scripts\\utils\\utils_r.R")
 
 pacman::p_load(char = pkgs, install = F)
 rm(pkgs)
@@ -46,6 +48,7 @@ options(scipen = 5)
 
 ## load files
 data_emb = fread("data/data_primary/embeddings.csv", stringsAsFactors = T)
+data_emb_moths = fread("data/data_primary/embeddings_moths.csv")
 data_feat = fread("data/data_primary/features.csv", stringsAsFactors = T)
 data_meta = fread("data/data_primary/meta.csv", stringsAsFactors = T)
 data_labels = fread("data/data_primary/labels.csv", stringsAsFactors = T)
@@ -85,6 +88,11 @@ data_rois_dv_sex = unique(data_meta[, c("species", "species_label","subfamily", 
 data_rois_dv_sex = data_rois_dv_sex[!sex == "unknown"]
 data_rois_dv_sex[, roi_path := paste0( "data_raw//segmentation_masks_clean//centroids_dv_sex", "//" , class_dv, "_", sex, "//", species, ".png")]
 
+## moth metadata
+data_emb_moths[, unpalatability := factor(ifelse(strategy=="aposematic", "high", "low"), levels=c("low","high"))]
+data_meta_moths_agg = unique(data_emb_moths[, .(species, strategy, unpalatability)])
+
+
 # 02 - secondary data ------------------------------------------------
 
 ## pca
@@ -93,7 +101,6 @@ pca_eigenvalues = fread("data/data_secondary/pca2_eigenvalues.csv", stringsAsFac
 pca_quanti_supp = fread("data/data_secondary/pca2_quanti_supp.csv", stringsAsFactors = T)
 pca_coords_moths_agg = fread("data/data_secondary/pca1_coords_moths_agg.csv")
 pca_coords_moths_agg[, unpalatability := factor(unpalatability, levels=c("low","high"))]
-data_meta_moths_agg = fread("data/data_primary/meta_moths.csv")
 
 # LDA
 data_lda = fread("data/data_secondary/ld_scores_butterflies.csv", stringsAsFactors = T)
@@ -107,6 +114,8 @@ data_sex_sim_agg = fread("data/data_secondary/sex_sim_agg.csv", stringsAsFactors
 data_sex_sim_agg_dv = fread("data/data_secondary/sex_sim_agg_dv.csv", stringsAsFactors = T)
 data_mean_sim_agg_dv_sex = fread("data/data_secondary/mean_sim_agg_dv_sex.csv", stringsAsFactors = T)
 
+## create folder to store results 
+dir.create("data/analyses_secondary", recursive = TRUE, showWarnings = FALSE)
 
 # 03 - variables / definitions --------------------------------------------
 
@@ -1830,7 +1839,7 @@ tips_left  <- data.frame(node = match(names(trait_left), tree$tip.label),
                        trait_left = as.numeric(trait_left))
 nodes_left <- data.frame(node = as.numeric(names(anc_fit_left)),
                          trait_left = as.numeric(anc_fit_left))
-tree_map_left <- bind_rows(tips_left, nodes_left)
+tree_map_left <- dplyr::bind_rows(tips_left, nodes_left)
 
 ## right fit 
 anc_fit_right <- fastAnc(tree, trait_right, vars = FALSE, CI = FALSE)
@@ -1838,11 +1847,11 @@ tips_right  <- data.frame(node = match(names(trait_right), tree$tip.label),
                           trait_right = as.numeric(trait_right))
 nodes_right <- data.frame(node = as.numeric(names(anc_fit_right)),
                           trait_right = as.numeric(anc_fit_right))
-tree_map_right <- bind_rows(tips_right, nodes_right)
+tree_map_right <- dplyr::bind_rows(tips_right, nodes_right)
 
 tree_phylo <- as.phylo(tree)  # strip simmap info
-tree_phylo <- full_join(tree_phylo, tree_map_left, by = 'node')
-tree_phylo <- full_join(tree_phylo, tree_map_right, by = 'node')
+tree_phylo <- dplyr::full_join(tree_phylo, tree_map_left, by = 'node')
+tree_phylo <- dplyr::full_join(tree_phylo, tree_map_right, by = 'node')
   
 data_rates_ld1 = data.table(
   LD1_f_d = data_rates[context_trait=="LD1_f_d", prob],
@@ -3176,7 +3185,7 @@ p_leg1 =
       title.position = "top")) +
   
   new_scale_color() +
-  geom_point(data=melt(rates_all),
+  geom_point(data=reshape2::melt(rates_all),
              aes(x=1,y=1,color=value)) +
   scale_color_viridis_c(
     "Aposematic coloration (LD1)",
@@ -3188,7 +3197,7 @@ p_leg1 =
       title.position = "top", direction = "horizontal")) +
 
   new_scale_color() +
-  geom_point(data=melt(traits_all),
+  geom_point(data=reshape2::melt(traits_all),
              aes(x=1, y=1, color=value)) +
   scale_color_viridis_c(
     "Prob. higher rate",

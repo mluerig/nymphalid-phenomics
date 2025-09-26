@@ -1,9 +1,3 @@
-if (!require("pacman")) install.packages("pacman")
-pkgs<-c("data.table", "terra","MASS"
-)
-pacman::p_load(char=pkgs,install=T)
-rm(pkgs)
-
 pred_gam_newd <- function(mod, varx = "x", vary = NA, var_cat = NA, 
                           extra_x = c(0.1, 0.1), extra_y = c(0.1, 0.1), 
                           n_gridlines = 25, too_far_val = 0.2, se=FALSE,

@@ -1,34 +1,41 @@
-## nymphalid-phenomics
+# nymphalid-phenomics
 
 </div><br>
 <div align="center">
 	<p><img src="assets/composite_dorsal1.png" width="90%"></p>
 </div>
 
-### About
+## About
 This repository contains the analytical pipeline and code to reproduce the results of the paper "Aposematic color patterns are the dominant axis of phenotypic diversification in Nymphalid butterflies" (Lürig et al. 2025). The pipeline combines image acquisition (mostly from online sources), segmentation, feature extraction, and phylogenetically informed statistical analysis to quantify aposematic color patterns in over one third of all species of the butterfly family Nymphalidae. 
 
-### Quickstart
-1. **Clone repo and install environment:**
-	```bash
-	git clone https://github.com/mluerig/nymphalid-phenomics.git
-	cd nymphalid-phenomics
-	mamba env create -f environment.yml -n nymphalidae1
-	conda activate nymphalidae1
-	```
-2. **Download the data:**
-	- Download the archived repository that contains all images and metadata from [Zenodo](https://doi.org/10.5281/zenodo.17204330). 
-	- Either place the segmented images in `data_raw/images/` and meta-data tables in `data/data_primary/`, or simply `cd` into the downloaded Zenodo repo.
-3. **Run the analysis scripts:**
-	- See Analysis section for details.
+## Quickstart
+Reproduction of figures and results only - for image analysis pipeline see Analysis section.
+1. **Download the repo:**
+	- Download the repository from [Zenodo](https://doi.org/10.5281/zenodo.17204330), unpack, and `cd` into the folder.
+2. **Run the analysis scripts:**
+	- Run scripts [`03_make_data.R`](scripts/03_make_data.R) and [`04_analysis.R`](scripts/04_analysis.R).
 
-### Installation
-1. **Create the environment:**
+## Image analysis 
+### Overview
+
+For the paper, we executed the full pipeline, which included: 1) image acquisition from GBIF, iDigBio, and our own imaging (also see [data_raw/README.md](data_raw/README.md)); 2) segmentation (see script 01); 3) image encoding (see script 02); 4) data cleaning; 5) wing surface classification; 6) literature review; and 7) statistical analysis (see scripts 03 and 04). The code for data cleaning and classifier training is not provided here, as these steps involved iterative and manual steps (e.g., using interactive plots), but a detailed description of the complete procedure can be found in the methods section of the manuscript. 
+
+</div><br>
+<div align="center">
+    <p><img src="assets/figureS1.png" width="400"></p>
+</div>
+
+
+### Installation 
+
+1. **Create the Python environment:**
 	```bash
 	mamba env create -f environment.yml -n nymphalidae1
 	conda activate nymphalidae1
 	```
-2. **Install additional packages:**
+2. **Install packages:**
+
+    (in this order)
 
 	UNICOM (image encoder):
     ```bash
@@ -40,11 +47,9 @@ This repository contains the analytical pipeline and code to reproduce the resul
     pip install --index-url https://download.pytorch.org/whl/cu126 torch torchvision
     ```
 
-### Data
+### Download data
 
-**Download:**
-  - A sample of raw images, all segmentation masks, as well as primary tabular- and meta-data are available through Zenodo: [https://doi.org/10.5281/zenodo.17204330](https://doi.org/10.5281/zenodo.17204330)
-  - The Zenodo-repo is simply a fully populated version of this GitHub-repo. So, you can either place the segmented images in `data_raw/images/` and meta-data tables in `data/data_primary/`, or just `cd` into the downloaded Zenodo repo and then run the scripts.
+A sample of raw images to demonstrate the segmentation step, as well as all segmentation masks for the feature extraction step, an all primary tabular- and meta-data are available via Zenodo: [https://doi.org/10.5281/zenodo.17204330](https://doi.org/10.5281/zenodo.17204330). 
 
 **Structure:**
 - `data_raw/`
@@ -60,17 +65,9 @@ This repository contains the analytical pipeline and code to reproduce the resul
 - `figures/` - figures from the manuscript.
 - `tables/` - tables from the manuscript.
 
-
 ### Analysis
 
-</div><br>
-<div align="center">
-    <p><img src="assets/figureS1.png" width="400"></p>
-</div>
-
-For the paper, we ran the full pipeline, which included 1) image downloads from GBIF and idigbio, and own imaging, 2) segmentation (see script 01)), 3) image encoding (see script 02), 4) cleaning, 5) wing surface classification, 6) literature review, and 7) statistical analysis (see scripts 03 and 04). We do not provide the code for cleaning and classifier training, as it was an iterative process with several manual steps (e.g., selection from interactive plots). The full procedure is described in detail in the methods-section of the manuscript. 
-
-The following scripts will allow you to reproduce the results:
+Download the archive, unpack, and run the scripts step by step: 
 
 **In Python:**
 - [`01_segmentation_demo.ipynb`](scripts/01_segmentation_demo.ipynb) — segments butterflies from images using GroundedSAM (demo, without cleaning-steps).
@@ -79,6 +76,3 @@ The following scripts will allow you to reproduce the results:
 **In R:**
 - [`03_make_data.R`](scripts/03_make_data.R) — assembles specimen-level and species-level tables for analysis.
 - [`04_analysis.R`](scripts/04_analysis.R) — runs all statistical models and generates figures and tables for the paper.
-
-
-### Citation
