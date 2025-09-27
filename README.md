@@ -11,7 +11,7 @@ This repository contains the analytical pipeline and code to reproduce the resul
 ## Quickstart
 Reproduction of figures and results only - for image analysis pipeline see below.
 1. **Download the repo:**
-	- Download the repository from [Zenodo](https://doi.org/10.5281/zenodo.17214905), unpack, and `cd` into the folder.
+	- [Download the repository](https://doi.org/10.5281/zenodo.17214905), unpack, and `cd` into the folder.
 2. **Run the analysis scripts:**
 	- Run scripts [`03_make_data.R`](scripts/03_make_data.R) and [`04_analysis.R`](scripts/04_analysis.R).
 
@@ -49,7 +49,7 @@ For the paper, we executed the full pipeline, which included: 1) image acquisiti
 
 ### Download data
 
-A sample of raw images to demonstrate the segmentation step, as well as all segmentation masks for the feature extraction step, and all primary tabular and meta-data are available via Zenodo: [https://doi.org/10.5281/zenodo.17214905](https://doi.org/10.5281/zenodo.17214905). 
+A sample of raw images to demonstrate the segmentation step, as well as all segmentation masks for the feature extraction step, and all primary tabular and meta-data are available here: [https://doi.org/10.5281/zenodo.17214905](https://doi.org/10.5281/zenodo.17214905). 
 
 **Structure:**
 - `data_raw/`
