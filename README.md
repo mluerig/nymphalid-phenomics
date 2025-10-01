@@ -8,6 +8,8 @@
 ## About
 This repository contains the analytical pipeline and code to reproduce the results of the paper "Aposematic color patterns are the dominant axis of phenotypic diversification in Nymphalid butterflies" (Lürig et al. 2025). The pipeline combines image acquisition (mostly from online sources), segmentation, feature extraction, and phylogenetically informed statistical analysis to quantify aposematic color patterns in over one third of all species of Nymphalidae. 
 
+[Lürig, M.D. et al. (2025) - biorxiv preprint](https://www.biorxiv.org/content/10.1101/2025.09.30.678834v1)
+
 ## Quickstart
 Reproduction of figures and results only - for image analysis pipeline see below.
 1. **Download the repo:**
@@ -76,3 +78,19 @@ Download the archive, unpack, and run the scripts step by step:
 **In R:**
 - [`03_make_data.R`](scripts/03_make_data.R) - assembles specimen-level and species-level tables for analysis.
 - [`04_analysis.R`](scripts/04_analysis.R) - runs all statistical models and generates figures and tables for the paper.
+
+## Citation
+	
+	@ARTICLE{Luerig2025-rp,
+	  title    = "Aposematic color patterns are the dominant axis of phenotypic
+	              diversification in Nymphalid butterflies",
+	  author   = "Luerig, Moritz D and Shirai, Leila T and Mota, Luisa and Willmott,
+	              Keith R and Freitas, Andre V L and Porto, Arthur",
+	  journal  = "bioRxiv",
+	  pages    = "2025.09.30.678834",
+	  month    =  oct,
+	  year     =  2025,
+	  doi      = "10.1101/2025.09.30.678834",
+	  language = "en"
+	}
+
