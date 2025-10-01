@@ -1,0 +1,3 @@
+This repository contains the analytical pipeline and code to reproduce the results of the paper "Aposematic color patterns are the dominant axis of phenotypic diversification in Nymphalid butterflies" (Lürig et al. 2025). The pipeline combines image acquisition (mostly from online sources), segmentation, feature extraction, and phylogenetically informed statistical analysis to quantify aposematic color patterns in over one third of all species of Nymphalidae. 
+
+To get started, consult the main README.md included in this archive (or the GitHub repository, if viewing this file standalone on Zenodo: https://github.com/mluerig/nymphalid-phenomics).
